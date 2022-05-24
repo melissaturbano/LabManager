@@ -5,6 +5,7 @@ namespace LabManager.Repositories;
 
 class ComputerRepository
 {
+    private DatabaseConfig databaseConfig;
     public List<Computer> GetAll()
     {
         var computers = new List<Computer>();

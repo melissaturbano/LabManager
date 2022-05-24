@@ -4,9 +4,11 @@ namespace LabManager.Database;
 
 class DatabaseSetup
 {
+    private DatabaseConfig databaseConfig;
 
-    public DatabaseSetup()
+    public DatabaseSetup(DatabaseConfig databaseConfig) // configuração p fazer tabela
     {
+        this.databaseConfig = databaseConfig;
         CreateTableComputer();
         CreateTableLab();
     }
