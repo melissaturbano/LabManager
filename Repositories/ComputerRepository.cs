@@ -37,7 +37,7 @@ class ComputerRepository
     }
 
 
-    public void Save (Computer computer)    //se passa o obj como parâmetro, pois eram muitos atributos
+    public Computer Save (Computer computer)    //se passa o obj como parâmetro, pois eram muitos atributos
     {
         var connection = new SqliteConnection(databaseConfig.ConnectionString);
             connection.Open();
@@ -50,5 +50,7 @@ class ComputerRepository
 
             command.ExecuteNonQuery();
             connection.Close();  
+
+            return computer; 
     }
 }
