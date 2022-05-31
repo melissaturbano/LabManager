@@ -36,4 +36,13 @@ if(modelName == "Computer")
                 var computer = new Computer(id, ram, processor);
                 computerRepository.Save(computer);
         }
+
+        if (modelAction == "Delete") 
+        {
+                Console.Write("Computer Delete");
+
+                int id = Convert.ToInt32(args[2]);
+                computerRepository.Delete(id);
+        
+        }
 }
