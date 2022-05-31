@@ -45,4 +45,22 @@ if(modelName == "Computer")
                 computerRepository.Delete(id);
         
         }
+
+        if (modelAction == "Show") 
+        {
+            Console.Write("Computer Show ");
+            int id = Convert.ToInt32(args[2]);
+
+
+            foreach (var computer in computerRepository.GetAll())
+            {
+                if(computer.Id == id)
+                {
+                    computerRepository.GetById(id);
+                    Console.WriteLine("{0}, {1}, {2}", computer.Id, computer.Ram, computer.Processor);
+                }
+            }
+
+
+        }
 }
