@@ -61,7 +61,7 @@ class ComputerRepository
 
         var command = connection.CreateCommand();
 
-        command.CommandText = "DELETE FROM Computers WHERE Id = $id;";
+        command.CommandText = "DELETE FROM Computers WHERE id = $id;";
         command.Parameters.AddWithValue("$id", id);
 
         command.ExecuteNonQuery();
@@ -76,7 +76,7 @@ class ComputerRepository
         var command = connection.CreateCommand();
 
     
-        command.CommandText = "SELECT * FROM Computers WHERE Id = $id ;";
+        command.CommandText = "SELECT * FROM Computers WHERE id = $id ;";
         command.Parameters.AddWithValue("$id", id);
 
 
@@ -97,7 +97,7 @@ class ComputerRepository
         connection.Open();
         var command = connection.CreateCommand();
         
-        command.CommandText = "UPDATE Computers SET Ram = $ram, Processor = $processor WHERE Id = $id;";  
+        command.CommandText = "UPDATE Computers SET ram = $ram, processor = $processor WHERE id = $id;";  
         command.Parameters.AddWithValue("$id", computer.Id);
         command.Parameters.AddWithValue("$ram", computer.Ram);
         command.Parameters.AddWithValue("$processor", computer.Processor); 
