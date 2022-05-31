@@ -45,6 +45,7 @@ if(modelName == "Computer")
                 computerRepository.Delete(id);
         
         }
+ 
 
         if (modelAction == "Show") 
         {
@@ -63,4 +64,6 @@ if(modelName == "Computer")
 
 
         }
+
+ 
 }
