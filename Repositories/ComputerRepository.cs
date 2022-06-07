@@ -21,13 +21,13 @@ class ComputerRepository
         var command = connection.CreateCommand();
         command.CommandText = "SELECT * FROM Computers;";
 
-        var reader = command.ExecuteReader();
+        var reader = command.ExecuteReader(); // quando precisa devolver uma resposta do banco
 
         while(reader.Read())
         {
-            var computer = new Computer(reader.GetInt32(0), reader.GetString(1), reader.GetString(2));
+            //var computer = readerToComputer(reader);
 
-            computers.Add(computer);
+            computers.Add(readerToComputer(reader));
         }
 
         reader.Close();
@@ -64,7 +64,7 @@ class ComputerRepository
         command.CommandText = "DELETE FROM Computers WHERE id = $id;";
         command.Parameters.AddWithValue("$id", id);
 
-        command.ExecuteNonQuery();
+        command.ExecuteNonQuery(); //quando não precisa de uma resposta do banco 
 
         connection.Close();
     }
@@ -76,13 +76,13 @@ class ComputerRepository
         var command = connection.CreateCommand();
 
     
-        command.CommandText = "SELECT * FROM Computers WHERE id = $id ;";
+        command.CommandText = "SELECT * FROM Computers WHERE id = $id ;"; //nunca concatenar sql com a variável, por isso do "$id"
         command.Parameters.AddWithValue("$id", id);
 
 
         var reader = command.ExecuteReader();
-        reader.Read();
-        var computer = new Computer(reader.GetInt32(0), reader.GetString(1), reader.GetString(2));
+        reader.Read(); //faz a leitura de linha por linha
+        var computer = readerToComputer(reader);
 
 
         reader.Close();
@@ -106,6 +106,31 @@ class ComputerRepository
         connection.Close(); 
 
         return computer;
+    }
+
+    private Computer readerToComputer(SqliteDataReader reader)
+    {
+        var computer = new Computer(reader.GetInt32(0), reader.GetString(1), reader.GetString(2));
+
+        return computer;
+
+    }
+
+
+    public bool existById(int id)
+    {
+        var connection = new SqliteConnection(databaseConfig.ConnectionString);
+        connection.Open();
+        var command = connection.CreateCommand();
+
+        command.CommandText = "SELECT count(id) FROM Computers WHERE id = $id;"; 
+        command.Parameters.AddWithValue("$id", id);
+
+
+        bool result = Convert.ToBoolean(command.ExecuteScalar()); // devolve um obj, que seria o valor
+
+
+        return result;
     }
 
 }

@@ -51,6 +51,14 @@ if(modelName == "Computer")
             Console.Write("Computer Show ");
             int id = Convert.ToInt32(args[2]);
 
+            if(computerRepository.existById(id))
+            {
+                var computer = computerRepository.GetById(id);
+                Console.WriteLine("{0}, {1}, {2}", computer.Id, computer.Ram, computer.Processor);
+            } else {
+                Console.WriteLine($"O computador {id} não existe");
+            }
+
 
             foreach (var computer in computerRepository.GetAll())
             {
