@@ -28,21 +28,36 @@ if(modelName == "Computer")
 
         if(modelAction == "New")
         {
-                Console.WriteLine("ComputerNew");
+                Console.WriteLine("Computer New ");
                 int id = Convert.ToInt32(args[2]);
                 var ram = args[3];
                 var processor = args[4];
 
-                var computer = new Computer(id, ram, processor);
-                computerRepository.Save(computer);
+                if(computerRepository.existById(id))
+                {
+                        Console.WriteLine($"O computador {id} já existe");
+                        
+                } else {
+                        var computer = new Computer(id, ram, processor);
+                        computerRepository.Save(computer);
+                        Console.WriteLine("{0}, {1}, {2}", computer.Id, computer.Ram, computer.Processor);
+                }
+
         }
 
         if (modelAction == "Delete") 
         {
-                Console.Write("Computer Delete");
-
+                Console.Write("Computer Delete ");
                 int id = Convert.ToInt32(args[2]);
-                computerRepository.Delete(id);
+
+                if(computerRepository.existById(id))
+                {
+                        computerRepository.Delete(id);
+                        
+                } else {
+                        Console.WriteLine($"O computador {id} não existe");
+                }
+
         
         }
 
@@ -58,32 +73,25 @@ if(modelName == "Computer")
             } else {
                 Console.WriteLine($"O computador {id} não existe");
             }
-
-
-            foreach (var computer in computerRepository.GetAll())
-            {
-                if(computer.Id == id)
-                {
-                    computerRepository.GetById(id);
-                    Console.WriteLine("{0}, {1}, {2}", computer.Id, computer.Ram, computer.Processor);
-                }
-            }
-
-
+            
         }
 
         if(modelAction == "Update")
         {
-                Console.WriteLine("Computer Update");
 
+                Console.WriteLine("Computer Update");
                 int id = Convert.ToInt32(args[2]);
                 var ram = args[3];
                 var processor = args[4];
 
-                var computer = new Computer(id, ram, processor);
-                computerRepository.Update(computer);
+                if(computerRepository.existById(id))
+                {
+                        var computer = new Computer(id, ram, processor);
+                        computerRepository.Update(computer);
+                        Console.WriteLine("{0}, {1}, {2}", computer.Id, computer.Ram, computer.Processor);
+                } else {
+                        Console.WriteLine($"O computador {id} não existe");
+                }
 
-                Console.WriteLine("{0}, {1}, {2}", computer.Id, computer.Ram, computer.Processor);
- 
         }
 }
