@@ -74,13 +74,6 @@ class ComputerRepository
         return computer;
     }
 
-    private Computer readerToComputer(SqliteDataReader reader)
-    {
-        var computer = new Computer(reader.GetInt32(0), reader.GetString(1), reader.GetString(2));
-
-        return computer;
-
-    }
 
 
     public bool existById(int id)
@@ -88,9 +81,7 @@ class ComputerRepository
         var connection = new SqliteConnection(databaseConfig.ConnectionString);
         connection.Open();
 
-        var count = connection.ExecuteScalar("SELECT count(id) FROM Computers WHERE id = @Id", new {Id = id});
-
-        bool result = Convert.ToBoolean(count); // devolve um obj, que seria o valor
+        var result = connection.ExecuteScalar<Boolean>("SELECT count(id) FROM Computers WHERE id = @Id", new {Id = id});
 
         return result;
     }
