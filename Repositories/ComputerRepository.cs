@@ -1,6 +1,7 @@
 using LabManager.Models;
 using LabManager.Database;
 using Microsoft.Data.Sqlite;
+using Dapper;
 
 namespace LabManager.Repositories;
 
@@ -11,26 +12,14 @@ class ComputerRepository
 
     public ComputerRepository(DatabaseConfig databaseConfig) => this.databaseConfig = databaseConfig;
 
-    public List<Computer> GetAll()
+    public IEnumerable<Computer> GetAll()
     {
-        var computers = new List<Computer>();
-        
-        var connection = new SqliteConnection(databaseConfig.ConnectionString);
+        using var connection = new SqliteConnection(databaseConfig.ConnectionString);
         connection.Open();
 
-        var command = connection.CreateCommand();
-        command.CommandText = "SELECT * FROM Computers;";
-
-        var reader = command.ExecuteReader(); // quando precisa devolver uma resposta do banco
-
-        while(reader.Read())
-        {
-            //var computer = readerToComputer(reader);
-
-            computers.Add(readerToComputer(reader));
-        }
-
-        reader.Close();
+        //Read
+        var computers = connection.Query<Computer>("SELECT * FROM Computers");
+ 
         connection.Close(); 
 
         return computers;
@@ -40,18 +29,12 @@ class ComputerRepository
     public Computer Save (Computer computer)    //se passa o obj como parâmetro, pois eram muitos atributos
     {
         var connection = new SqliteConnection(databaseConfig.ConnectionString);
-            connection.Open();
+        connection.Open();
+        //Create
+        connection.Execute("INSERT INTO Computers VALUES(@Id, @Ram, @Processor)", computer);
 
-            var command = connection.CreateCommand();
-            command.CommandText = "INSERT INTO Computers VALUES($id, $ram, $processor);";
-            command.Parameters.AddWithValue("$id", computer.Id);
-            command.Parameters.AddWithValue("$ram", computer.Ram);
-            command.Parameters.AddWithValue("$processor", computer.Processor);
-
-            command.ExecuteNonQuery();
-            connection.Close();  
-
-            return computer; 
+        connection.Close();  
+        return computer; 
     }
 
     public void Delete (int id) 
@@ -59,12 +42,8 @@ class ComputerRepository
         var connection = new SqliteConnection(databaseConfig.ConnectionString);
         connection.Open();
 
-        var command = connection.CreateCommand();
-
-        command.CommandText = "DELETE FROM Computers WHERE id = $id;";
-        command.Parameters.AddWithValue("$id", id);
-
-        command.ExecuteNonQuery(); //quando não precisa de uma resposta do banco 
+        // new {Id = id}  -> encapsulando propriedade de um obj, sem precisar criar uma classe para isso
+        connection.Execute("DELETE FROM Computers WHERE id = @Id", new {Id = id} );
 
         connection.Close();
     }
@@ -73,36 +52,23 @@ class ComputerRepository
     {
         var connection = new SqliteConnection(databaseConfig.ConnectionString);
         connection.Open();
-        var command = connection.CreateCommand();
-
-    
-        command.CommandText = "SELECT * FROM Computers WHERE id = $id ;"; //nunca concatenar sql com a variável, por isso do "$id"
-        command.Parameters.AddWithValue("$id", id);
 
 
-        var reader = command.ExecuteReader();
-        reader.Read(); //faz a leitura de linha por linha
-        var computer = readerToComputer(reader);
-
-
-        reader.Close();
+        var computer = connection.QuerySingle<Computer>("SELECT * FROM Computers WHERE id = @Id", new {Id = id});
+ 
         connection.Close(); 
 
         return computer;
+
     }
 
     public Computer Update (Computer computer)
     {
         var connection = new SqliteConnection(databaseConfig.ConnectionString);
         connection.Open();
-        var command = connection.CreateCommand();
-        
-        command.CommandText = "UPDATE Computers SET ram = $ram, processor = $processor WHERE id = $id;";  
-        command.Parameters.AddWithValue("$id", computer.Id);
-        command.Parameters.AddWithValue("$ram", computer.Ram);
-        command.Parameters.AddWithValue("$processor", computer.Processor); 
 
-        command.ExecuteNonQuery();
+        connection.Execute("UPDATE Computers SET ram = @Ram, processor = @Processor WHERE id = @Id", computer);
+        
         connection.Close(); 
 
         return computer;
@@ -121,14 +87,10 @@ class ComputerRepository
     {
         var connection = new SqliteConnection(databaseConfig.ConnectionString);
         connection.Open();
-        var command = connection.CreateCommand();
 
-        command.CommandText = "SELECT count(id) FROM Computers WHERE id = $id;"; 
-        command.Parameters.AddWithValue("$id", id);
+        var count = connection.ExecuteScalar("SELECT count(id) FROM Computers WHERE id = @Id", new {Id = id});
 
-
-        bool result = Convert.ToBoolean(command.ExecuteScalar()); // devolve um obj, que seria o valor
-
+        bool result = Convert.ToBoolean(count); // devolve um obj, que seria o valor
 
         return result;
     }
